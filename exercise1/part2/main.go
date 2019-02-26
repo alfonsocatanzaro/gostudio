@@ -1,7 +1,7 @@
 package main
 
 import (
-	"evsncoding/csv"
+	"encoding/csv"
 	"flag"
 	"fmt"
 	"os"
@@ -11,7 +11,7 @@ import (
 
 func main() {
 	csvFilename := flag.String("csv", "problems.csv", "a csv file in the format 'question,answer'")
-	timeLimitInSecond := flag.Int("s", 30, "time limit in seconds.")
+	timeLimitInSecond := flag.Int("limit", 30, "time limit in seconds.")
 	flag.Parse()
 
 	file, err := os.Open(*csvFilename)
@@ -28,7 +28,7 @@ func main() {
 
 	fmt.Printf("Premi invio per iniziare il quiz!")
 	fmt.Scanf("\n")
-	tmr := time.NewTimer(*timeLimitInSecond * time.Second)
+	tmr := time.NewTimer(time.Duration(*timeLimitInSecond) * time.Second)
 	endQuiz := make(chan bool)
 	go func() {
 		for i, p := range problems {
