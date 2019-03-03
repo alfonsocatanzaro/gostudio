@@ -1,6 +1,7 @@
 package urlshort
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"gopkg.in/yaml.v2"
@@ -50,16 +51,37 @@ func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 
 }
 
-func parseYAML(yml []byte) ([]pathURL, error) {
-	var paths []pathURL
-	err := yaml.Unmarshal(yml, &paths)
-	return paths, err
+func JSONHandler(data []byte, fallback http.Handler) (http.HandlerFunc, error) {
+	urls, err := parseJSON(data)
+	if err != nil {
+		return nil, err
+	}
+	pathMap := buildMap(urls)
+	return MapHandler(pathMap, fallback), nil
 }
 
-func buildMap(pyaml []pathURL) map[string]string {
+func parseJSON(data []byte) ([]pathURL, error) {
+	var paths []pathURL
+	err := json.Unmarshal(data, &paths)
+	if err != nil {
+		return nil, err
+	}
+	return paths, nil
+}
+
+func parseYAML(data []byte) ([]pathURL, error) {
+	var paths []pathURL
+	err := yaml.Unmarshal(data, &paths)
+	if err != nil {
+		return nil, err
+	}
+	return paths, nil
+}
+
+func buildMap(lista []pathURL) map[string]string {
 	var pathsToUrls = make(map[string]string)
-	for _, site := range pyaml {
-		pathsToUrls[site.Path] = site.URL
+	for _, item := range lista {
+		pathsToUrls[item.Path] = item.URL
 	}
 	return pathsToUrls
 }
