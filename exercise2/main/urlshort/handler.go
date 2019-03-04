@@ -42,15 +42,16 @@ func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.Handl
 // See MapHandler to create a similar http.HandlerFunc via
 // a mapping of paths to urls.
 func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
-	parsedYaml, err := parseYAML(yml)
-	if err != nil {
-		return nil, err
+	parsedYaml, errore := parseYAML(yml)
+	if errore != nil {
+		return nil, errore
 	}
 	pathMap := buildMap(parsedYaml)
 	return MapHandler(pathMap, fallback), nil
 
 }
 
+// JSONHandler imposta il json e restituisce l'handler
 func JSONHandler(data []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	urls, err := parseJSON(data)
 	if err != nil {
