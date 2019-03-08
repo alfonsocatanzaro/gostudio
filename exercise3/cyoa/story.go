@@ -1,9 +1,25 @@
 package cyoa
 
+import (
+	"encoding/json"
+	"io"
+)
+
+// JSONStory load story from a reader object
+func JSONStory(r io.Reader) (Story, error) {
+	d := json.NewDecoder(r)
+	var story Story
+	err := d.Decode(&story)
+	if err != nil {
+		return nil, err
+	}
+	return story, nil
+}
+
 // Story contain the story loaded by json
 type Story map[string]Chapter
 
-// Chapet contains a single chapter of the story
+// Chapter contains a single chapter of the story
 type Chapter struct {
 	Title      string   `json:"title"`
 	paragraphs []string `json:"story"`
