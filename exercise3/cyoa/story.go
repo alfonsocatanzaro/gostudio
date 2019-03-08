@@ -3,10 +3,10 @@ package cyoa
 // Story contain the story loaded by json
 type Story map[string]Chapter
 
-// Chapet contains a single chapter of the story
+// Chapter contains a single chapter of the story
 type Chapter struct {
 	Title      string   `json:"title"`
-	paragraphs []string `json:"story"`
+	Paragraphs []string `json:"story"`
 	Options    []Option `json:"options"`
 }
 
