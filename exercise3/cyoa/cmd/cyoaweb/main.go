@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"gostudio/exercise3/cyoa"
 	"os"
 )
 
@@ -16,5 +17,9 @@ func main() {
 		panic(err)
 	}
 
+	story, err := cyoa.JSONStory(f)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("%+v\n", story)
 }

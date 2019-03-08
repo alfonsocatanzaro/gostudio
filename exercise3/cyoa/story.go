@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// JSONStory load story from a reader object
+// JSONStory load story from a reader object.
 func JSONStory(r io.Reader) (Story, error) {
 	d := json.NewDecoder(r)
 	var story Story
