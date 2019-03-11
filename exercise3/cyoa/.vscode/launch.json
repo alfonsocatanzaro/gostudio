@@ -10,8 +10,8 @@
             "request": "launch",
             "mode": "auto",
             //"program": "${fileDirname}",
-            "program": "${workspaceFolder}/cyoa/cmd/cyoaweb/main.go",
-            "cwd" :"${workspaceFolder}/cyoa",
+            "program": "${workspaceFolder}/cmd/cyoaweb/main.go",
+            "cwd" :"${workspaceFolder}/",
             "env": {},
             "args": []
         }
