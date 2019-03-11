@@ -27,13 +27,14 @@ var defaultHandlerTmpl = `
     {{end}}
     <ul>
         {{range .Options}}
-        <li><a href="/{{.Chapter}}">{{.Text}}</a></li>
+        <li><a href="/{{.Arc}}">{{.Text}}</a></li>
         {{end}}
     </ul>
 </body>
 </html>
 `
 
+// NewHandler create a handler object to serve
 func NewHandler(s Story) http.Handler {
 	return handler{s}
 }
