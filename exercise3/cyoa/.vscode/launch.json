@@ -25,8 +25,7 @@
             "env": {},
             "args": [
                 "-file","gopher.json",
-                "-port","3000",
-                "-template","template.html",
+                "-port","3000"            
             ]
         }
     ]
