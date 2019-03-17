@@ -1,8 +1,8 @@
 package link
 
 import (
-	"fmt"
 	"io"
+	"strings"
 
 	"golang.org/x/net/html"
 )
@@ -17,30 +17,51 @@ type Link struct {
 // Parse will take in an HTML document and will return a
 // slice of links parsed from it
 func Parse(r io.Reader) ([]Link, error) {
-	//links := make(Link[])
 	doc, err := html.Parse(r)
 	if err != nil {
 		return nil, err
 	}
-	dfs(doc, "")
-	return nil, nil
+	nodes := linkNodes(doc)
+	var links []Link
+	for _, node := range nodes {
+		links = append(links, buildLink(node))
+	}
+
+	return links, nil
 }
 
-func dfs(n *html.Node, padding string) {
-	msg := n.Data
-	if n.Type == html.ElementNode {
-		if n.Data == "a" {
-			if href, ok := getAttributeValue(n, "href"); ok {
-				msg = msg + ` href="` + href + `"`
-			}
-		}
-		msg = "<" + msg + ">"
+func buildLink(n *html.Node) Link {
+	var ret Link
+	ret.Href, _ = getAttributeValue(n, "href")
+	ret.Text = text(n)
+	return ret
+}
+
+func text(n *html.Node) string {
+	if n.Type == html.TextNode || n.Type == html.CommentNode {
+		return n.Data
 	}
 
-	fmt.Println(padding, msg)
-	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		dfs(c, padding+"  ")
+	if n.Type != html.ElementNode {
+		return ""
 	}
+
+	var ret string
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		ret += text(c) + " "
+	}
+	return strings.Join(strings.Fields(ret), " ")
+}
+
+func linkNodes(n *html.Node) []*html.Node {
+	if n.Type == html.ElementNode && n.Data == "a" {
+		return []*html.Node{n}
+	}
+	var ret []*html.Node
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		ret = append(ret, linkNodes(c)...)
+	}
+	return ret
 }
 
 func getAttributeValue(n *html.Node, name string) (string, bool) {
