@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"gostudio/exercise4/link"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -22,7 +23,17 @@ func main() {
 	urlFlag := flag.String("url", "https://gophercises.com/", "Url of the site to build sitemat from.")
 	flag.Parse()
 
-	resp, err := http.Get(*urlFlag)
+	fmt.Println("Get -> " + *urlFlag)
+
+	pages := get(urlFlag)
+	for _, page := range pages {
+		fmt.Println(page)
+	}
+
+}
+
+func get(urlStr *string) []string {
+	resp, err := http.Get(*urlStr)
 	if err != nil {
 		panic(err)
 	}
@@ -37,27 +48,47 @@ func main() {
 
 	base := baseURL.String()
 
-	links, _ := link.Parse(resp.Body)
-	var hrefs []string
+	return filter(
+		hrefs(resp.Body, base),
+		withPrefex(base),
+	)
+
+}
+
+type filterFunc func(string) bool
+
+func hrefs(r io.Reader, base string) []string {
+	links, _ := link.Parse(r)
+	var ret []string
 	for _, l := range links {
 		switch {
 		case strings.HasPrefix(l.Href, "/"):
-			hrefs = append(hrefs, base+l.Href)
+			ret = append(ret, base+l.Href)
 		case strings.HasPrefix(l.Href, "http"):
-			hrefs = append(hrefs, l.Href)
+			ret = append(ret, l.Href)
 		}
 	}
 
-	for _, l := range hrefs {
-		fmt.Println(l)
+	return ret
+}
+
+func filter(links []string, keepFns ...filterFunc) []string {
+	var ret []string
+LINK:
+	for _, link := range links {
+		for _, keepFn := range keepFns {
+			if !keepFn(link) {
+				continue LINK
+			}
+		}
+		ret = append(ret, link)
+
 	}
+	return ret
+}
 
-	/*
-		/some-path
-		https://gophercises.com/some-path
-		http://gophercises.com/some-path
-		#fragments
-		mailto:mail@domain.com
-	*/
-
+func withPrefex(pfx string) func(string) bool {
+	return func(link string) bool {
+		return strings.HasPrefix(link, pfx)
+	}
 }
