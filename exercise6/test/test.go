@@ -2,50 +2,45 @@ package main
 
 import (
 	"fmt"
-	"math"
-	"strconv"
-	"strings"
 )
 
 func main() {
-	arr := []int32{19, 10, 12, 10, 24, 25, 22}
-	n := nonDivisibleSubset(4, arr) - 1
+	arr := []int32{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	n := nonDivisibleSubset(4, arr)
 	fmt.Printf("%d\n", n)
 
 }
 
 func nonDivisibleSubset(k int32, S []int32) int32 {
-	comb := int32(math.Pow(2, float64(len(S))) - 1)
-	ret := 0
-	for n := comb; n > 0; n-- {
-		form := "%0" + strconv.Itoa(len(S)) + "b"
-		bits := fmt.Sprintf(form, n)
-		c := strings.Count(bits, "1")
-		if c <= ret {
-			continue
-		}
-		if arrIsOk(bits, &S, k) {
-			ret = c
+	resti := make(map[int32]int32)
+	for i := k - 1; i > -1; i-- {
+		resti[i] = 0
+	}
+	for _, n := range S {
+		resti[n%k]++
+	}
+
+	if resti[0] > 1 {
+		resti[0] = 1
+	}
+	if (k%2 == 0) && resti[k/2] > 1 {
+		resti[k/2] = 1
+	}
+
+	for n := k - 1; n > k/2; n-- {
+		n1 := k - n
+		if resti[n] > resti[n1] {
+			resti[n1] = 0
+		} else {
+			resti[n] = 0
 		}
 	}
 
-	return int32(ret)
-
-}
-
-func arrIsOk(bits string, s2 *[]int32, k int32) bool {
-	for a := 0; a < len(bits); a++ {
-		if bits[a] == '0' {
-			continue
-		}
-		for b := a + 1; b < len(*s2); b++ {
-			if bits[b] == '0' {
-				continue
-			}
-			if (((*s2)[a] + (*s2)[b]) % k) == 0 {
-				return false
-			}
-		}
+	ret := int32(0)
+	for _, c := range resti {
+		ret += c
 	}
-	return true
+
+	return ret
+
 }
