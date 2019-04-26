@@ -1,5 +1,6 @@
 package cmd
 
+//go get -u github.com/spf13/cobra/cobra
 import "github.com/spf13/cobra"
 
 var RootCmd = &cobra.Command{
