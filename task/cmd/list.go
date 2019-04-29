@@ -21,10 +21,9 @@ var listCmd = &cobra.Command{
 			fmt.Println("You have no tasks to complete! Why not take a vacation? 🏖")
 			return
 		}
-		fmt.Printf("You have the following tasks:")
+		fmt.Println("You have the following tasks:")
 		for i,task := range tasks{
 			fmt.Printf("%d. %s\n",i+1,task.Value)
-			fmt.Printf("%d\n", task.Key)
 		}
 
 	},
